@@ -266,6 +266,17 @@ class Pilotage(unittest.TestCase):
             self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 19)
         run(t())
 
+    def test_thermostat_inconnu_commande_injoignable_ignore(self):
+        async def t():
+            hass, p, *_ = await self.monter()
+            hass.states.set("climate.chambre", "unknown", {"hvac_modes": ["off", "heat"], "temperature": 17})
+            hass.states.set("climate.sejour", "unavailable", {})
+            await p.async_executer()
+            ch = hass.states.get("climate.chambre")
+            self.assertEqual((ch.state, ch.attributes["temperature"]), ("heat", 19))
+            self.assertEqual(self.appels(hass, "climate.sejour"), [])
+        run(t())
+
     def test_suspendre(self):
         async def t():
             hass, p, *_ = await self.monter()

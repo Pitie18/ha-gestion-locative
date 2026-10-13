@@ -12,7 +12,7 @@ from typing import Any
 
 from homeassistant.components.climate import ATTR_HVAC_MODES
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_ENTITY_ID, ATTR_TEMPERATURE, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.const import ATTR_ENTITY_ID, ATTR_TEMPERATURE, STATE_UNAVAILABLE
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import (
@@ -64,7 +64,9 @@ from .planning import (
 
 _LOGGER = logging.getLogger(__name__)
 
-ETATS_INDISPONIBLES = (STATE_UNAVAILABLE, STATE_UNKNOWN)
+# « unknown » n'empêche pas de commander : certains radiateurs (Tuya) n'indiquent pas leur
+# mode tout en acceptant les ordres ; seul un appareil injoignable est ignoré
+ETATS_INDISPONIBLES = (STATE_UNAVAILABLE,)
 
 
 def reglages_cible(options: dict[str, Any], cible: str) -> dict[str, Any]:
