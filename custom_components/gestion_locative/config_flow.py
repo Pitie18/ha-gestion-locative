@@ -56,6 +56,7 @@ from .const import (
 )
 
 GENERAL = "general"
+LOGEMENTS = "logements"
 TERMINER = "terminer"
 
 
@@ -184,6 +185,7 @@ class GestionLocativeOptionsFlow(OptionsFlow):
     def __init__(self) -> None:
         self._options: dict[str, Any] | None = None
         self._cible = BATIMENT
+        self._ids: list[int] | None = None  # nouvelle liste de logements, appliquée à l'enregistrement
 
     def _opts(self) -> dict[str, Any]:
         if self._options is None:
@@ -195,9 +197,12 @@ class GestionLocativeOptionsFlow(OptionsFlow):
         noms = {BATIMENT: f"{self.config_entry.title} (bâtiment, communs)"}
         donnees = getattr(self.config_entry, "runtime_data", None)
         occ = donnees.coordinateur.data if donnees else None
-        for i in self.config_entry.data[CONF_LOGEMENTS]:
+        for i in self._logements_choisis():
             noms[str(i)] = occ.logements[int(i)].nom if occ and int(i) in occ.logements else f"Logement {i}"
         return noms
+
+    def _logements_choisis(self) -> list[int]:
+        return self._ids if self._ids is not None else [int(i) for i in self.config_entry.data[CONF_LOGEMENTS]]
 
     def _reglages(self) -> dict[str, Any]:
         r = copy.deepcopy(DEFAUTS_CIBLE)
@@ -208,12 +213,26 @@ class GestionLocativeOptionsFlow(OptionsFlow):
         if user_input is not None:
             choix = user_input["quoi"]
             if choix == TERMINER:
+                if self._ids is not None:
+                    # logements retirés : leurs réglages partent avec eux
+                    gardes = {str(i) for i in self._ids} | {BATIMENT}
+                    cibles = self._opts()[CONF_CIBLES]
+                    for cle in [c for c in cibles if c not in gardes]:
+                        del cibles[cle]
+                    self.hass.config_entries.async_update_entry(
+                        self.config_entry, data={**self.config_entry.data, CONF_LOGEMENTS: self._ids}
+                    )
                 return self.async_create_entry(data=self._opts())
             if choix == GENERAL:
                 return await self.async_step_general()
+            if choix == LOGEMENTS:
+                return await self.async_step_logements()
             self._cible = choix
             return await self.async_step_cible()
-        options = [SelectOptionDict(value=GENERAL, label="Général (météo)")]
+        options = [
+            SelectOptionDict(value=GENERAL, label="Général (météo)"),
+            SelectOptionDict(value=LOGEMENTS, label="Logements du bâtiment (ajouter / retirer)"),
+        ]
         options += [SelectOptionDict(value=k, label=v) for k, v in self._noms().items()]
         options.append(SelectOptionDict(value=TERMINER, label="✔ Terminer et enregistrer"))
         return self.async_show_form(
@@ -221,6 +240,42 @@ class GestionLocativeOptionsFlow(OptionsFlow):
             data_schema=vol.Schema(
                 {vol.Required("quoi", default=GENERAL): SelectSelector(SelectSelectorConfig(options=options, mode=SelectSelectorMode.LIST))}
             ),
+        )
+
+    async def async_step_logements(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Ajouter ou retirer des logements ; appliqué à « Terminer et enregistrer »."""
+        erreurs: dict[str, str] = {}
+        if user_input is not None:
+            ids = sorted(int(i) for i in user_input[CONF_LOGEMENTS])
+            if not ids:
+                erreurs["base"] = "aucun_choix"
+            else:
+                self._ids = ids
+                return await self.async_step_init()
+        try:
+            rep = await _lire_logements(self.hass, self.config_entry.data[CONF_URL], self.config_entry.data[CONF_CLE])
+        except CleRefusee:
+            return self.async_abort(reason="cle_refusee")
+        except ErreurApi:
+            return self.async_abort(reason="injoignable")
+        choix = [
+            SelectOptionDict(
+                value=str(l["id"]),
+                label=l["nom"] + (" (mandat)" if l.get("role") == "mandataire" else ""),
+            )
+            for l in rep.get("logements") or []
+        ]
+        actuels = [str(i) for i in self._logements_choisis()]
+        return self.async_show_form(
+            step_id="logements",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_LOGEMENTS, default=actuels): SelectSelector(
+                        SelectSelectorConfig(options=choix, multiple=True, mode=SelectSelectorMode.LIST)
+                    ),
+                }
+            ),
+            errors=erreurs,
         )
 
     async def async_step_general(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:

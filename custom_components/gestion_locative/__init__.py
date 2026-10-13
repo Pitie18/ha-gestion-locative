@@ -41,6 +41,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: EntreeGestionLocative) -
         model="Bâtiment",
     )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    # appareils des logements retirés de l'intégration : supprimés
+    gardes = {f"{entry.entry_id}_{c}" for c in pilote.cibles}
+    for appareil in dr.async_entries_for_config_entry(registre, entry.entry_id):
+        if not any(i[0] == DOMAIN and i[1] in gardes for i in appareil.identifiers):
+            registre.async_remove_device(appareil.id)
     # logements rattachés à l'appareil du bâtiment
     for lid in coordinateur.ids:
         appareil = registre.async_get_device(identifiers={(DOMAIN, f"{entry.entry_id}_{lid}")})
@@ -51,6 +56,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: EntreeGestionLocative) -
     entry.async_on_unload(entry.add_update_listener(_options_modifiees))
     hass.async_create_task(pilote.async_executer())
     return True
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: EntreeGestionLocative, appareil: dr.DeviceEntry
+) -> bool:
+    """Suppression manuelle d'un appareil : seulement s'il n'est plus dans l'intégration."""
+    gardes = {f"{entry.entry_id}_{c}" for c in entry.runtime_data.pilote.cibles}
+    return not any(i[0] == DOMAIN and i[1] in gardes for i in appareil.identifiers)
 
 
 async def _options_modifiees(hass: HomeAssistant, entry: EntreeGestionLocative) -> None:

@@ -29,6 +29,7 @@ Roue dentée de l'intégration, puis choisir quoi régler, et finir par « Termi
 
 ![Menu des réglages](docs/captures/3-reglages.png)
 
+- **Logements du bâtiment** : ajouter ou retirer des logements. Un logement retiré perd ses réglages et ses entités (appareil supprimé).
 - **Général** : entité météo avec prévision horaire (pour la climatisation).
 
   ![Choix de la météo](docs/captures/4-meteo.png)

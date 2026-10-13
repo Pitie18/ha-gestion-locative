@@ -80,10 +80,22 @@
           "jours_maintien": "Kept on between stays if less than",
           "encore": "Add another one next"
         }
+      },
+      "logements": {
+        "title": "Building units",
+        "description": "Tick the units controlled in this building. A removed unit loses its settings and entities. Applied on “Finish and save”.",
+        "data": {
+          "logements": "Units"
+        }
       }
     },
     "error": {
-      "min_sup_max": "Min temperature must be lower than max."
+      "min_sup_max": "Min temperature must be lower than max.",
+      "aucun_choix": "Choose at least one unit."
+    },
+    "abort": {
+      "cle_refusee": "Key rejected by the tool: update it.",
+      "injoignable": "Tool unreachable, try again later."
     }
   },
   "entity": {

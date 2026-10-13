@@ -80,10 +80,22 @@
           "jours_maintien": "Maintenu entre deux séjours si moins de",
           "encore": "Ajouter un autre équipement ensuite"
         }
+      },
+      "logements": {
+        "title": "Logements du bâtiment",
+        "description": "Cochez les logements à piloter dans ce bâtiment. Un logement retiré perd ses réglages et ses entités. Pris en compte à « Terminer et enregistrer ».",
+        "data": {
+          "logements": "Logements"
+        }
       }
     },
     "error": {
-      "min_sup_max": "La température min doit être inférieure à la max."
+      "min_sup_max": "La température min doit être inférieure à la max.",
+      "aucun_choix": "Choisissez au moins un logement."
+    },
+    "abort": {
+      "cle_refusee": "Clé refusée par l'outil : mettez-la à jour.",
+      "injoignable": "Outil injoignable, réessayez plus tard."
     }
   },
   "entity": {
