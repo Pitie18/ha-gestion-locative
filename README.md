@@ -19,6 +19,8 @@ Ajoutez l'intégration **une fois par bâtiment** : un compte peut en avoir auta
 
 ![L'intégration avec le bâtiment et ses logements](docs/captures/2-integration.png)
 
+**Astuce** : rattachez chaque appareil « logement » à la pièce Home Assistant qui contient ses radiateurs (Paramètres → Appareils → le logement → crayon → Pièce). L'occupation, la prochaine arrivée et le nombre de personnes s'affichent alors sur la fiche de la pièce, à côté des thermostats.
+
 Dans l'outil, réglez les heures de chaque logement (**Configuration du logement** → « Arrivée à partir de » / « Départ au plus tard à » ; 16:00 et 10:00 par défaut).
 
 **Tant qu'aucun thermostat ni équipement n'est attribué, l'intégration ne commande rien** : elle affiche seulement l'occupation. Si des automatisations pilotent déjà les mêmes thermostats (hors-gel, limitation…), désactivez-les avant d'attribuer les thermostats, sinon elles se contrediront.
