@@ -1,0 +1,32 @@
+name: Publication
+
+# Crée la release vX.Y.Z dès que la version du manifeste change sur main
+# (HACS installe les releases ; sans release, il ne connaît que des numéros de commit).
+on:
+  push:
+    branches: [main]
+    paths:
+      - custom_components/gestion_locative/manifest.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version du manifeste
+        id: v
+        run: echo "version=$(jq -r .version custom_components/gestion_locative/manifest.json)" >> "$GITHUB_OUTPUT"
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "v$VERSION existe déjà"
+          else
+            gh release create "v$VERSION" --target "$GITHUB_SHA" --title "$VERSION" --generate-notes
+          fi
