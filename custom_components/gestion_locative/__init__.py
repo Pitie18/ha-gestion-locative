@@ -41,15 +41,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: EntreeGestionLocative) -
         model="Bâtiment",
     )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    # appareils des logements retirés de l'intégration : supprimés
+    # appareils de cette entrée : ceux des logements retirés sont supprimés,
+    # les autres rattachés à l'appareil du bâtiment
     gardes = {f"{entry.entry_id}_{c}" for c in pilote.cibles}
     for appareil in dr.async_entries_for_config_entry(registre, entry.entry_id):
-        if not any(i[0] == DOMAIN and i[1] in gardes for i in appareil.identifiers):
+        ident = next((i[1] for i in appareil.identifiers if i[0] == DOMAIN), None)
+        if ident not in gardes:
             registre.async_remove_device(appareil.id)
-    # logements rattachés à l'appareil du bâtiment
-    for lid in coordinateur.ids:
-        appareil = registre.async_get_device(identifiers={(DOMAIN, f"{entry.entry_id}_{lid}")})
-        if appareil and appareil.via_device_id != batiment.id:
+        elif appareil.id != batiment.id and appareil.via_device_id != batiment.id:
             registre.async_update_device(appareil.id, via_device_id=batiment.id)
     await pilote.async_demarrer()
     entry.async_on_unload(pilote.async_arreter)
