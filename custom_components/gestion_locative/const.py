@@ -70,6 +70,9 @@ DOMAINES_EQUIPEMENT = [
 
 INTERVALLE_SYNCHRO = timedelta(minutes=15)
 INTERVALLE_PILOTAGE = timedelta(minutes=5)
+# attente avant de ramener le réglage du client dans les bornes : laisse le thermostat
+# et le client finir leur réglage (sinon ils se renvoient la valeur)
+DELAI_BORNE = timedelta(minutes=1)
 JOURS_HORIZON = 60
 
 # heures de la prévision regardées pour décider de la climatisation

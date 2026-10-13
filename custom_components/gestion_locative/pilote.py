@@ -15,7 +15,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_ENTITY_ID, ATTR_TEMPERATURE, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.event import async_track_state_change_event, async_track_time_interval
+from homeassistant.helpers.event import (
+    async_call_later,
+    async_track_state_change_event,
+    async_track_time_interval,
+)
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
@@ -36,6 +40,7 @@ from .const import (
     CONF_THERMOSTATS_VIVRE,
     DEFAUTS_CIBLE,
     DEFAUTS_EQUIPEMENT,
+    DELAI_BORNE,
     DOMAIN,
     ETAT_OCCUPE,
     ETAT_PRECHAUFFAGE,
@@ -110,6 +115,7 @@ class Pilote:
         self._desabonner: list[CALLBACK_TYPE] = []
         self._verrou = asyncio.Lock()
         self._prevision: list[dict[str, Any]] | None = None
+        self._attentes: dict[str, CALLBACK_TYPE] = {}  # bornes en attente, par thermostat
 
     # ---------- démarrage / arrêt ----------
 
@@ -130,6 +136,9 @@ class Pilote:
         for d in self._desabonner:
             d()
         self._desabonner.clear()
+        for annuler in self._attentes.values():
+            annuler()
+        self._attentes.clear()
 
     @callback
     def ecouter(self, fonction: Callable[[], None]) -> Callable[[], None]:
@@ -266,6 +275,9 @@ class Pilote:
                 if await self._regler(entite, etat, voulu_mode, voulue):
                     self._memoire["thermostats"][entite] = cle
             elif ph.etat in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+                # réglage en cours (moins d'une minute) : la borne attendue s'en chargera
+                if entite in self._attentes or dt_util.now() - etat.last_updated < DELAI_BORNE:
+                    continue
                 await self._borner(entite, r)
 
     async def _regler(self, entite: str, etat: Any, mode: str, temperature: float) -> bool:
@@ -305,14 +317,28 @@ class Pilote:
 
     @callback
     def _sur_thermostat(self, event: Event) -> None:
-        """Réglage changé (souvent par le client) : bornes appliquées tout de suite en séjour."""
+        """Réglage changé (souvent par le client) : bornes appliquées une minute après le
+        dernier changement, comme une automatisation en mode « restart »."""
         entite = event.data["entity_id"]
         for cible in self.cibles:
             if self.suspendu[cible] or entite not in [t for t, _ in self._thermostats(cible)]:
                 continue
             resume = self.resumes.get(cible)
-            if resume and resume.etat in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+            if not resume or resume.etat not in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+                continue
+            if entite in self._attentes:
+                self._attentes.pop(entite)()
+
+            @callback
+            def _echeance(_now: Any, entite: str = entite, cible: str = cible) -> None:
+                self._attentes.pop(entite, None)
+                resume = self.resumes.get(cible)
+                if self.suspendu[cible] or not resume or resume.etat not in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+                    return
                 self.hass.async_create_task(self._borner(entite, reglages_cible(self.options, cible)))
+
+            self._attentes[entite] = async_call_later(self.hass, DELAI_BORNE, _echeance)
+            return
 
     async def _piloter_equipements(self, cible: str, sejours: list[Sejour], maintenant: datetime, r: dict[str, Any]) -> None:
         for brut in r[CONF_EQUIPEMENTS]:

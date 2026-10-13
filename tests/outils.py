@@ -49,6 +49,30 @@ class Horloge:
     maintenant = heure("2026-10-13 11:15")
 
 
+class Minuteries:
+    """async_call_later simulé : les échéances se déclenchent avec declencher()."""
+
+    en_attente: list = []
+
+    @classmethod
+    def plus_tard(cls, hass, delai, action):
+        entree = [Horloge.maintenant + delai, action]
+        cls.en_attente.append(entree)
+
+        def annuler():
+            if entree in cls.en_attente:
+                cls.en_attente.remove(entree)
+
+        return annuler
+
+    @classmethod
+    def declencher(cls):
+        dues = [e for e in cls.en_attente if e[0] <= Horloge.maintenant]
+        for e in dues:
+            cls.en_attente.remove(e)
+            e[1](Horloge.maintenant)
+
+
 class HomeAssistantError(Exception):
     pass
 
@@ -58,6 +82,7 @@ class Etat:
         self.entity_id = entity_id
         self.state = state
         self.attributes = attributes or {}
+        self.last_updated = Horloge.maintenant
 
 
 class Etats:
@@ -199,6 +224,7 @@ def charger_tout():
         "homeassistant.helpers.event",
         async_track_state_change_event=lambda hass, entites, f: (lambda: None),
         async_track_time_interval=lambda hass, f, intervalle: (lambda: None),
+        async_call_later=Minuteries.plus_tard,
     )
     _module("homeassistant.helpers.storage", Store=Store)
     _module("homeassistant.helpers.update_coordinator", DataUpdateCoordinator=DataUpdateCoordinator, UpdateFailed=UpdateFailed)

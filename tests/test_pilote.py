@@ -2,7 +2,9 @@
 import asyncio
 import unittest
 
-from outils import Entree, FauxHass, Horloge, Store, charger_tout, fixture, heure
+from datetime import timedelta
+
+from outils import Entree, FauxHass, Horloge, Minuteries, Store, charger_tout, fixture, heure
 
 pilote_mod, coord_mod, api_mod = charger_tout()
 
@@ -53,6 +55,7 @@ def run(coro):
 class Pilotage(unittest.TestCase):
     def setUp(self):
         Store.disque.clear()
+        Minuteries.en_attente.clear()
         Horloge.maintenant = heure("2026-10-13 11:15")
 
     async def monter(self, options=OPTIONS, ids=(13, 14)):
@@ -103,24 +106,71 @@ class Pilotage(unittest.TestCase):
             self.assertEqual(hass.services.appels, [])
         run(t())
 
-    def test_reglage_du_client_borne(self):
+    def test_reglage_du_client_borne_apres_une_minute(self):
         async def t():
             hass, p, *_ = await self.monter()
             await p.async_executer()
             hass.services.vider()
-            # le client monte à 28 : ramené à 24 ; à 22 : laissé
-            hass.states.set("climate.chambre", "heat", {"hvac_modes": ["off", "heat", "cool"], "temperature": 28})
-            p._sur_thermostat(type("E", (), {"data": {"entity_id": "climate.chambre"}})())
+            evt = type("E", (), {"data": {"entity_id": "climate.chambre"}})()
+            modes = {"hvac_modes": ["off", "heat", "cool"]}
+            # le client monte à 26 puis 28 : rien tant qu'il règle
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 26})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(seconds=40)
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 28})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(seconds=40)
+            Minuteries.declencher()
+            await p.async_executer()  # passage périodique pendant l'attente : rien non plus
+            await hass.finir()
+            self.assertEqual(hass.services.appels, [])
+            self.assertEqual(len(Minuteries.en_attente), 1)  # une seule attente, relancée
+            # une minute après le dernier changement : ramené à 24
+            Horloge.maintenant += timedelta(seconds=25)
+            Minuteries.declencher()
             await hass.finir()
             self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 24)
-            hass.states.set("climate.chambre", "heat", {"hvac_modes": ["off", "heat", "cool"], "temperature": 22})
+            # à 22 : laissé
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 22})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(minutes=2)
+            Minuteries.declencher()
             hass.services.vider()
+            await hass.finir()
             await p.async_executer()
             self.assertEqual(hass.services.appels, [])
             # le client éteint : on respecte
-            hass.states.set("climate.chambre", "off", {"hvac_modes": ["off", "heat", "cool"], "temperature": 5})
+            hass.states.set("climate.chambre", "off", {**modes, "temperature": 5})
+            Horloge.maintenant += timedelta(minutes=2)
             await p.async_executer()
             self.assertEqual(hass.states.get("climate.chambre").state, "off")
+        run(t())
+
+    def test_borne_au_passage_periodique_si_reglage_ancien(self):
+        async def t():
+            hass, p, *_ = await self.monter()
+            await p.async_executer()
+            # réglage changé sans événement reçu (HA redémarré, par exemple)
+            hass.states.set("climate.chambre", "heat", {"hvac_modes": ["off", "heat", "cool"], "temperature": 30})
+            await p.async_executer()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 30)  # trop récent
+            Horloge.maintenant += timedelta(minutes=5)
+            await p.async_executer()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 24)
+        run(t())
+
+    def test_pas_de_borne_hors_sejour(self):
+        async def t():
+            hass, p, *_ = await self.monter()
+            Horloge.maintenant = heure("2026-10-15 12:00")  # inter-séjour
+            await p.async_executer()
+            hass.states.set("climate.chambre", "heat", {"hvac_modes": ["off", "heat", "cool"], "temperature": 30})
+            p._sur_thermostat(type("E", (), {"data": {"entity_id": "climate.chambre"}})())
+            Horloge.maintenant += timedelta(minutes=10)
+            Minuteries.declencher()
+            await p.async_executer()
+            await hass.finir()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 30)
         run(t())
 
     def test_enchainement_inter_sejour_puis_arrivee(self):
@@ -179,6 +229,7 @@ class Pilotage(unittest.TestCase):
             self.assertEqual(p.resumes["13"].mode_prevu, "cool")
             # en clim, le client ne descend pas sous la max
             hass.states.set("climate.chambre", "cool", {"hvac_modes": ["off", "heat", "cool"], "temperature": 20})
+            Horloge.maintenant += timedelta(minutes=2)
             await p.async_executer()
             self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 24)
         run(t())
