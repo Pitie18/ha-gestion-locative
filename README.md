@@ -10,17 +10,29 @@ Home Assistant interroge l'outil toutes les 15 minutes : il n'a pas besoin d'êt
 2. Installer **Gestion locative**, puis redémarrer Home Assistant.
 3. **Paramètres → Appareils et services → Ajouter une intégration → Gestion locative**.
 4. Adresse de l'outil et clé d'accès (dans l'outil : **Mon compte → Action → API externe**, « Créer une clé »).
+
+   ![Connexion à l'outil](docs/captures/1-connexion.png)
+
 5. Choisir les logements d'un bâtiment et nommer le bâtiment.
 
-Ajoutez l'intégration **une fois par bâtiment** : un compte peut en avoir autant qu'il veut. Les logements en mandat sont proposés aussi.
+Ajoutez l'intégration **une fois par bâtiment** : un compte peut en avoir autant qu'il veut. Les logements en mandat sont proposés aussi. Le bâtiment et chaque logement deviennent un appareil :
+
+![L'intégration avec le bâtiment et ses logements](docs/captures/2-integration.png)
 
 Dans l'outil, réglez les heures de chaque logement (**Configuration du logement** → « Arrivée à partir de » / « Départ au plus tard à » ; 16:00 et 10:00 par défaut).
 
+**Tant qu'aucun thermostat ni équipement n'est attribué, l'intégration ne commande rien** : elle affiche seulement l'occupation. Si des automatisations pilotent déjà les mêmes thermostats (hors-gel, limitation…), désactivez-les avant d'attribuer les thermostats, sinon elles se contrediront.
+
 ## Réglages
 
-**Configurer** sur l'intégration, puis choisir quoi régler (et « Terminer et enregistrer ») :
+Roue dentée de l'intégration, puis choisir quoi régler, et finir par « Terminer et enregistrer » (rien n'est enregistré avant) :
+
+![Menu des réglages](docs/captures/3-reglages.png)
 
 - **Général** : entité météo avec prévision horaire (pour la climatisation).
+
+  ![Choix de la météo](docs/captures/4-meteo.png)
+
 - **Le bâtiment** (communs) et **chaque logement** :
   - thermostats des chambres et des pièces à vivre ;
   - consigne chambre, consigne pièce à vivre ;
@@ -28,7 +40,11 @@ Dans l'outil, réglez les heures de chaque logement (**Configuration du logement
   - température inter-séjour, et l'écart (en jours) en dessous duquel elle s'applique ;
   - seuil de climatisation (30 °C par défaut) ;
   - mise en route H heures avant l'arrivée ; décalage au départ (−2 = 2 h avant, +1 = 1 h après) ;
-  - équipements, autant que voulu, chacun avec son avance, son décalage au départ et le nombre de jours en dessous duquel il reste allumé entre deux séjours.
+  - puis les équipements, autant que voulu, chacun avec son avance, son décalage au départ et le nombre de jours en dessous duquel il reste allumé entre deux séjours.
+
+  ![Réglages d'un logement](docs/captures/5-logement.png)
+
+Exemple (logement de montagne, arrivée 16 h) : chambres 20 °C, pièces à vivre 22 °C, min 7 °C (hors-gel), max 23 °C, inter-séjour 12 °C si moins de 2 jours, mise en route 14 h avant (2 h du matin), départ +2 h.
 
 ## Fonctionnement
 

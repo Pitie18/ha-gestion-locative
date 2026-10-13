@@ -32,8 +32,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: EntreeGestionLocative) -
     await coordinateur.async_config_entry_first_refresh()
     pilote = Pilote(hass, entry, coordinateur)
     entry.runtime_data = Donnees(coordinateur, pilote)
-    # appareil du bâtiment créé d'abord : les logements y sont rattachés
-    dr.async_get(hass).async_get_or_create(
+    registre = dr.async_get(hass)
+    batiment = registre.async_get_or_create(
         config_entry_id=entry.entry_id,
         identifiers={(DOMAIN, f"{entry.entry_id}_{BATIMENT}")},
         name=entry.title,
@@ -41,6 +41,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: EntreeGestionLocative) -
         model="Bâtiment",
     )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    # logements rattachés à l'appareil du bâtiment
+    for lid in coordinateur.ids:
+        appareil = registre.async_get_device(identifiers={(DOMAIN, f"{entry.entry_id}_{lid}")})
+        if appareil and appareil.via_device_id != batiment.id:
+            registre.async_update_device(appareil.id, via_device_id=batiment.id)
     await pilote.async_demarrer()
     entry.async_on_unload(pilote.async_arreter)
     entry.async_on_unload(entry.add_update_listener(_options_modifiees))

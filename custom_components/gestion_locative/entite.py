@@ -24,7 +24,6 @@ class EntiteCible(Entity):
             name=pilote.nom(cible),
             manufacturer="Gestion locative",
             model="Bâtiment" if cible == BATIMENT else "Logement",
-            via_device=None if cible == BATIMENT else (DOMAIN, f"{pilote.entry.entry_id}_{BATIMENT}"),
         )
 
     @property
