@@ -274,8 +274,8 @@ class Pilote:
                 voulu_mode, voulue = consigne(ph.etat, mode or MODE_CHAUFFAGE, role, r)
                 if await self._regler(entite, etat, voulu_mode, voulue):
                     self._memoire["thermostats"][entite] = cle
-            elif ph.etat in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
-                # réglage en cours (moins d'une minute) : la borne attendue s'en chargera
+            else:
+                # bornes min / max tenues en permanence (séjour ou non) ; réglage en cours (moins d'une minute) : la borne attendue s'en chargera
                 if entite in self._attentes or dt_util.now() - etat.last_updated < DELAI_BORNE:
                     continue
                 await self._borner(entite, r)
@@ -317,14 +317,15 @@ class Pilote:
 
     @callback
     def _sur_thermostat(self, event: Event) -> None:
-        """Réglage changé (souvent par le client) : bornes appliquées une minute après le
-        dernier changement, comme une automatisation en mode « restart »."""
+        """Réglage changé (client, personnel) : bornes min / max appliquées une minute après
+        le dernier changement, comme une automatisation en mode « restart », que le logement
+        soit occupé ou non."""
         entite = event.data["entity_id"]
         for cible in self.cibles:
             if self.suspendu[cible] or entite not in [t for t, _ in self._thermostats(cible)]:
                 continue
             resume = self.resumes.get(cible)
-            if not resume or resume.etat not in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+            if not resume:
                 continue
             if entite in self._attentes:
                 self._attentes.pop(entite)()
@@ -333,7 +334,7 @@ class Pilote:
             def _echeance(_now: Any, entite: str = entite, cible: str = cible) -> None:
                 self._attentes.pop(entite, None)
                 resume = self.resumes.get(cible)
-                if self.suspendu[cible] or not resume or resume.etat not in (ETAT_PRECHAUFFAGE, ETAT_OCCUPE):
+                if self.suspendu[cible] or not resume:
                     return
                 self.hass.async_create_task(self._borner(entite, reglages_cible(self.options, cible)))
 

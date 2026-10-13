@@ -159,14 +159,34 @@ class Pilotage(unittest.TestCase):
             self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 24)
         run(t())
 
-    def test_pas_de_borne_hors_sejour(self):
+    def test_bornes_aussi_hors_sejour(self):
         async def t():
             hass, p, *_ = await self.monter()
             Horloge.maintenant = heure("2026-10-15 12:00")  # inter-séjour
             await p.async_executer()
-            hass.states.set("climate.chambre", "heat", {"hvac_modes": ["off", "heat", "cool"], "temperature": 30})
-            p._sur_thermostat(type("E", (), {"data": {"entity_id": "climate.chambre"}})())
-            Horloge.maintenant += timedelta(minutes=10)
+            evt = type("E", (), {"data": {"entity_id": "climate.chambre"}})()
+            modes = {"hvac_modes": ["off", "heat", "cool"]}
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 30})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(minutes=2)
+            Minuteries.declencher()
+            await hass.finir()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 24)
+            # vacance : pas en dessous de la min (hors-gel)
+            Horloge.maintenant = heure("2026-11-03 12:00")
+            await p.async_executer()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 14)
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 5})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(minutes=2)
+            Minuteries.declencher()
+            await hass.finir()
+            self.assertEqual(hass.states.get("climate.chambre").attributes["temperature"], 14)
+            # suspendu : libre
+            p.suspendu["13"] = True
+            hass.states.set("climate.chambre", "heat", {**modes, "temperature": 30})
+            p._sur_thermostat(evt)
+            Horloge.maintenant += timedelta(minutes=2)
             Minuteries.declencher()
             await p.async_executer()
             await hass.finir()

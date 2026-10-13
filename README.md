@@ -57,12 +57,12 @@ Exemple (logement de montagne, arrivée 16 h) : chambres 20 °C, pièces à vivr
 |---|---|---|---|
 | Séjour (dès H heures avant l'arrivée), chauffage | chauffage | chambre ou pièce à vivre | entre min et max |
 | Séjour, climatisation | climatisation | max | pas en dessous de la max |
-| Entre deux séjours proches | chauffage | inter-séjour | libre |
-| Vacance | chauffage | min | libre |
+| Entre deux séjours proches | chauffage | inter-séjour | entre min et max |
+| Vacance | chauffage | min | entre min et max |
 
 - À **chaque arrivée** (même le jour d'un départ), les thermostats repartent de la consigne.
 - **Climatisation** seulement si la prévision du jour d'arrivée, à 14 h, 15 h ou 16 h, dépasse le seuil du logement. La décision est prise à la mise en route et gardée pendant le séjour. Sans météo ou sans prévision : chauffage. Jamais de climatisation hors séjour. Un thermostat sans mode froid n'est pas touché quand la climatisation est choisie.
-- Le client garde la main dans les bornes ; il peut aussi éteindre. Un réglage hors bornes est ramené **une minute après le dernier changement** (attente relancée à chaque modification), pour ne pas se disputer le thermostat pendant que le client règle.
+- Les bornes min et max valent **tout le temps**, logement occupé ou vide (sauf « Suspendre ») : le client, ou quiconque règle un radiateur, garde la main dans ces bornes ; il peut aussi éteindre. Un réglage hors bornes est ramené **une minute après le dernier changement** (attente relancée à chaque modification), pour ne pas se disputer le thermostat pendant que le client règle.
 
 **Équipements** : en marche de « arrivée − avance » à « départ + décalage », maintenus entre deux séjours plus proches que le nombre de jours indiqué. Interrupteurs, lumières, ventilateurs, entrées booléennes, chauffe-eau : marche / arrêt. Automatisation : activée / désactivée. Script : lancé à la mise en route (rien à l'arrêt).
 
