@@ -1,0 +1,131 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion à l'outil de gestion locative",
+        "description": "Adresse de l'outil (par exemple location.pitap.com) et clé d'accès créée dans Mon compte → API externe.",
+        "data": {
+          "url": "Adresse de l'outil",
+          "cle": "Clé d'accès"
+        }
+      },
+      "logements": {
+        "title": "Logements à piloter",
+        "description": "Choisissez les logements de ce bâtiment. Le bâtiment est occupé dès qu'un de ses logements l'est (communs : éclairage, chauffage, VMC, ballon). Ajoutez l'intégration une fois par bâtiment.",
+        "data": {
+          "nom": "Nom du bâtiment",
+          "logements": "Logements"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Nouvelle clé d'accès",
+        "description": "L'outil refuse la clé enregistrée (révoquée ?). Créez-en une dans Mon compte → API externe.",
+        "data": {
+          "cle": "Clé d'accès"
+        }
+      }
+    },
+    "error": {
+      "cle_refusee": "Clé refusée : absente, invalide ou révoquée.",
+      "injoignable": "Outil injoignable : vérifiez l'adresse (https) et que l'API est installée.",
+      "aucun_logement": "Aucun logement accessible avec cette clé.",
+      "aucun_choix": "Choisissez au moins un logement."
+    },
+    "abort": {
+      "already_configured": "Ces logements sont déjà pilotés par une autre intégration.",
+      "reauth_successful": "Clé mise à jour."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Réglages",
+        "description": "Choisissez ce que vous voulez régler, puis « Terminer et enregistrer ».",
+        "data": {
+          "quoi": "À régler"
+        }
+      },
+      "general": {
+        "title": "Général",
+        "description": "Entité météo avec prévision horaire : à chaque arrivée, la climatisation n'est mise en route que si la prévision de 14 h à 16 h du jour d'arrivée dépasse le seuil du logement. Sans météo : toujours chauffage.",
+        "data": {
+          "meteo": "Météo"
+        }
+      },
+      "cible": {
+        "title": "{nom}",
+        "description": "Séjour : consigne chambre / pièce à vivre au chauffage (le client règle entre min et max) ; climatisation : consigne = max, le client ne descend pas en dessous. Entre deux séjours proches : température inter-séjour. Vacance : température min.",
+        "data": {
+          "thermostats_chambre": "Thermostats des chambres",
+          "thermostats_vivre": "Thermostats des pièces à vivre",
+          "consigne_chambre": "Consigne chambre",
+          "consigne_vivre": "Consigne pièce à vivre",
+          "temp_min": "Température min (et vacance)",
+          "temp_max": "Température max (et minimum en climatisation)",
+          "temp_inter": "Température inter-séjour",
+          "jours_inter": "Inter-séjour si l'écart est inférieur à",
+          "seuil_clim": "Seuil climatisation (prévision 14 h–16 h)",
+          "heures_avant": "Mise en route avant l'arrivée",
+          "decalage_depart": "Décalage au départ (−2 = avant, +1 = après)"
+        }
+      },
+      "equipements": {
+        "title": "{nom} : équipements ({nombre})",
+        "description": "VMC, ballon, éclairage… allumés de « avant l'arrivée » jusqu'au départ + décalage, et maintenus entre deux séjours plus proches que le nombre de jours indiqué. Un script est lancé à la mise en route ; une automatisation est activée puis désactivée.",
+        "data": {
+          "retirer": "Retirer",
+          "entite": "Ajouter un équipement",
+          "heures_avant": "Avant l'arrivée",
+          "decalage_depart": "Décalage au départ",
+          "jours_maintien": "Maintenu entre deux séjours si moins de",
+          "encore": "Ajouter un autre équipement ensuite"
+        }
+      }
+    },
+    "error": {
+      "min_sup_max": "La température min doit être inférieure à la max."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "occupe": {
+        "name": "Occupé"
+      }
+    },
+    "sensor": {
+      "etat": {
+        "name": "État",
+        "state": {
+          "vide": "Vide",
+          "prechauffage": "Préchauffage",
+          "occupe": "Occupé",
+          "inter_sejour": "Inter-séjour"
+        }
+      },
+      "mode_prevu": {
+        "name": "Mode prévu",
+        "state": {
+          "heat": "Chauffage",
+          "cool": "Climatisation"
+        }
+      },
+      "prochaine_arrivee": {
+        "name": "Prochaine arrivée"
+      },
+      "prochain_depart": {
+        "name": "Prochain départ"
+      },
+      "personnes": {
+        "name": "Personnes"
+      },
+      "derniere_synchro": {
+        "name": "Dernière synchronisation"
+      }
+    },
+    "switch": {
+      "suspendre": {
+        "name": "Suspendre"
+      }
+    }
+  }
+}

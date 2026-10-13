@@ -1,0 +1,131 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to the rental management tool",
+        "description": "Tool address (e.g. location.pitap.com) and access key created in My account → External API.",
+        "data": {
+          "url": "Tool address",
+          "cle": "Access key"
+        }
+      },
+      "logements": {
+        "title": "Units to control",
+        "description": "Choose the units of this building. The building is occupied as soon as one of its units is (common areas). Add the integration once per building.",
+        "data": {
+          "nom": "Building name",
+          "logements": "Units"
+        }
+      },
+      "reauth_confirm": {
+        "title": "New access key",
+        "description": "The tool rejects the stored key. Create a new one in My account → External API.",
+        "data": {
+          "cle": "Access key"
+        }
+      }
+    },
+    "error": {
+      "cle_refusee": "Key rejected: missing, invalid or revoked.",
+      "injoignable": "Tool unreachable: check the https address and that the API is installed.",
+      "aucun_logement": "No unit available with this key.",
+      "aucun_choix": "Choose at least one unit."
+    },
+    "abort": {
+      "already_configured": "These units are already controlled by another entry.",
+      "reauth_successful": "Key updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "description": "Choose what to configure, then “Finish and save”.",
+        "data": {
+          "quoi": "Configure"
+        }
+      },
+      "general": {
+        "title": "General",
+        "description": "Weather entity with hourly forecast: cooling is used on arrival only if the 2–4 pm forecast exceeds the unit threshold. Without weather: always heating.",
+        "data": {
+          "meteo": "Weather"
+        }
+      },
+      "cible": {
+        "title": "{nom}",
+        "description": "Stay: bedroom / living setpoint when heating (guest adjusts between min and max); cooling: setpoint = max, guest cannot go below. Between close stays: in-between temperature. Vacant: min temperature.",
+        "data": {
+          "thermostats_chambre": "Bedroom thermostats",
+          "thermostats_vivre": "Living area thermostats",
+          "consigne_chambre": "Bedroom setpoint",
+          "consigne_vivre": "Living area setpoint",
+          "temp_min": "Min temperature (and vacant)",
+          "temp_max": "Max temperature (and cooling minimum)",
+          "temp_inter": "In-between temperature",
+          "jours_inter": "In-between if gap is less than",
+          "seuil_clim": "Cooling threshold (2–4 pm forecast)",
+          "heures_avant": "Start before arrival",
+          "decalage_depart": "Departure offset (−2 = before, +1 = after)"
+        }
+      },
+      "equipements": {
+        "title": "{nom}: equipment ({nombre})",
+        "description": "Ventilation, water heater, lights… on from “before arrival” until departure + offset, kept on between stays closer than the given days. Scripts run at start; automations are enabled then disabled.",
+        "data": {
+          "retirer": "Remove",
+          "entite": "Add equipment",
+          "heures_avant": "Before arrival",
+          "decalage_depart": "Departure offset",
+          "jours_maintien": "Kept on between stays if less than",
+          "encore": "Add another one next"
+        }
+      }
+    },
+    "error": {
+      "min_sup_max": "Min temperature must be lower than max."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "occupe": {
+        "name": "Occupied"
+      }
+    },
+    "sensor": {
+      "etat": {
+        "name": "State",
+        "state": {
+          "vide": "Vacant",
+          "prechauffage": "Preheating",
+          "occupe": "Occupied",
+          "inter_sejour": "Between stays"
+        }
+      },
+      "mode_prevu": {
+        "name": "Planned mode",
+        "state": {
+          "heat": "Heating",
+          "cool": "Cooling"
+        }
+      },
+      "prochaine_arrivee": {
+        "name": "Next arrival"
+      },
+      "prochain_depart": {
+        "name": "Next departure"
+      },
+      "personnes": {
+        "name": "Guests"
+      },
+      "derniere_synchro": {
+        "name": "Last sync"
+      }
+    },
+    "switch": {
+      "suspendre": {
+        "name": "Suspend"
+      }
+    }
+  }
+}

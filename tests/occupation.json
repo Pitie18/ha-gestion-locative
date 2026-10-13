@@ -1,0 +1,302 @@
+{
+ "version": 1,
+ "genere_le": "2026-10-13T11:15:12+02:00",
+ "fuseau": "Europe/Paris",
+ "du": "2026-10-13",
+ "au": "2026-11-12",
+ "logements": [
+  {
+   "id": 8,
+   "nom": "Logement 1",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8557,
+     "type": "blocage_proprietaire",
+     "arrivee": "2026-11-11T16:00:00+01:00",
+     "depart": "2026-11-14T10:00:00+01:00",
+     "personnes": 1
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "nom": "Logement 2",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8378,
+     "type": "sejour",
+     "arrivee": "2026-10-30T16:00:00+01:00",
+     "depart": "2026-11-01T10:00:00+01:00",
+     "personnes": 2
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "nom": "Logement 3",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8676,
+     "type": "sejour",
+     "arrivee": "2026-10-20T16:00:00+02:00",
+     "depart": "2026-10-23T10:00:00+02:00",
+     "personnes": 5
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "nom": "Logement 4",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8627,
+     "type": "sejour",
+     "arrivee": "2026-10-16T16:00:00+02:00",
+     "depart": "2026-10-18T10:00:00+02:00",
+     "personnes": 4
+    },
+    {
+     "id": 8631,
+     "type": "sejour",
+     "arrivee": "2026-10-20T16:00:00+02:00",
+     "depart": "2026-10-22T10:00:00+02:00",
+     "personnes": 2
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "nom": "Logement 5",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8374,
+     "type": "sejour",
+     "arrivee": "2026-10-26T16:00:00+01:00",
+     "depart": "2026-10-28T10:00:00+01:00",
+     "personnes": 4
+    },
+    {
+     "id": 8666,
+     "type": "sejour",
+     "arrivee": "2026-10-29T16:00:00+01:00",
+     "depart": "2026-10-31T10:00:00+01:00",
+     "personnes": 3
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "nom": "Logement 6",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8514,
+     "type": "sejour",
+     "arrivee": "2026-10-12T16:00:00+02:00",
+     "depart": "2026-10-15T10:00:00+02:00",
+     "personnes": 2
+    },
+    {
+     "id": 8545,
+     "type": "sejour",
+     "arrivee": "2026-10-16T16:00:00+02:00",
+     "depart": "2026-10-21T10:00:00+02:00",
+     "personnes": 1
+    },
+    {
+     "id": 8364,
+     "type": "sejour",
+     "arrivee": "2026-10-21T16:00:00+02:00",
+     "depart": "2026-10-31T10:00:00+01:00",
+     "personnes": 2
+    },
+    {
+     "id": 8406,
+     "type": "sejour",
+     "arrivee": "2026-11-11T16:00:00+01:00",
+     "depart": "2026-11-14T10:00:00+01:00",
+     "personnes": 2
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "nom": "Logement 7",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": []
+  },
+  {
+   "id": 15,
+   "nom": "Logement 8",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8609,
+     "type": "sejour",
+     "arrivee": "2026-10-20T16:00:00+02:00",
+     "depart": "2026-10-22T10:00:00+02:00",
+     "personnes": 3
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "nom": "Logement 9",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8617,
+     "type": "sejour",
+     "arrivee": "2026-10-21T16:00:00+02:00",
+     "depart": "2026-10-25T10:00:00+01:00",
+     "personnes": 2
+    },
+    {
+     "id": 8548,
+     "type": "sejour",
+     "arrivee": "2026-10-26T16:00:00+01:00",
+     "depart": "2026-11-01T10:00:00+01:00",
+     "personnes": 3
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "nom": "Logement 10",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8649,
+     "type": "sejour",
+     "arrivee": "2026-10-23T16:00:00+02:00",
+     "depart": "2026-10-30T10:00:00+01:00",
+     "personnes": 4
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "nom": "Logement 11",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8468,
+     "type": "sejour",
+     "arrivee": "2026-10-17T16:00:00+02:00",
+     "depart": "2026-10-22T10:00:00+02:00",
+     "personnes": 7
+    },
+    {
+     "id": 8375,
+     "type": "sejour",
+     "arrivee": "2026-10-30T16:00:00+01:00",
+     "depart": "2026-11-01T10:00:00+01:00",
+     "personnes": 9
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "nom": "Logement 12",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": [
+    {
+     "id": 8439,
+     "type": "sejour",
+     "arrivee": "2026-10-16T16:00:00+02:00",
+     "depart": "2026-10-18T10:00:00+02:00",
+     "personnes": 11
+    },
+    {
+     "id": 8583,
+     "type": "sejour",
+     "arrivee": "2026-10-19T16:00:00+02:00",
+     "depart": "2026-10-23T10:00:00+02:00",
+     "personnes": 6
+    },
+    {
+     "id": 8365,
+     "type": "sejour",
+     "arrivee": "2026-10-24T16:00:00+02:00",
+     "depart": "2026-10-26T10:00:00+01:00",
+     "personnes": 10
+    },
+    {
+     "id": 8414,
+     "type": "sejour",
+     "arrivee": "2026-11-06T16:00:00+01:00",
+     "depart": "2026-11-08T10:00:00+01:00",
+     "personnes": 11
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "nom": "Logement 13",
+   "role": "proprietaire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": []
+  },
+  {
+   "id": 47,
+   "nom": "Logement 14",
+   "role": "mandataire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": []
+  },
+  {
+   "id": 48,
+   "nom": "Logement 15",
+   "role": "mandataire",
+   "heure_arrivee_min": "16:00",
+   "heure_depart_max": "10:00",
+   "heures_par_defaut": true,
+   "sejours": []
+  }
+ ]
+}
