@@ -86,6 +86,8 @@ Un appareil par logement et un pour le bâtiment :
 
 ## Développement
 
+Publier une version : monter `version` dans `custom_components/gestion_locative/manifest.json` et pousser sur `main`. L'action « Publication » crée alors la release `vX.Y.Z`, que HACS propose en mise à jour.
+
 ```
 python -m unittest discover -s tests -v
 ```
